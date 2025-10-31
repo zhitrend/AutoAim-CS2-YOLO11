@@ -43,6 +43,9 @@ prediction_ms: 40
 # clamp target speed (pixels/second) to avoid spikes
 max_target_speed: 4000
 
+# enable/disable predictor smoothing and lead
+prediction_enabled: false
+
 # smooth mouse movement settings
 mouse_gain: 0.65
 mouse_max_step: 80

@@ -33,7 +33,10 @@ def main():
         mouse_position = get_mouse_position()
         target = select_target(detections, cfg["preferred_cls"], cfg["screen_region"], cfg["confidence_threshold"], mouse_xy=mouse_position)
         if target:
-            pred_x, pred_y = predictor.update_and_predict(*target)
+            if cfg.get("prediction_enabled", True):
+                pred_x, pred_y = predictor.update_and_predict(*target)
+            else:
+                pred_x, pred_y = target
             if cfg.get("direct_move_enabled", False):
                 move_mouse_to_duration(
                     pred_x,

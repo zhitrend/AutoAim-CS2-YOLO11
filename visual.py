@@ -53,7 +53,10 @@ def main():
             # print(f"Targeting result: {xywhconfcls}")
 
             target = target[:2]
-            pred_x, pred_y = predictor.update_and_predict(*target)
+            if cfg.get("prediction_enabled", True):
+                pred_x, pred_y = predictor.update_and_predict(*target)
+            else:
+                pred_x, pred_y = target
             log.info(f"Target: {(pred_x, pred_y)}")
             if cfg.get("direct_move_enabled", False):
                 move_mouse_to_duration(
