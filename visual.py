@@ -19,15 +19,21 @@ def main():
     model = YOLOModel(cfg["model_path"])
 
     while True:
-        frame = grab(region=cfg["screen_region"], use_gpu=cfg["use_gpu_capture"])
+        # Capture screen
+        frame = grab(region=cfg["screen_region"])
         img_tensor = preprocess(frame)
 
-        results = model.predict(img_tensor, conf = cfg["confidence_threshold"])
-        if results:
+        # Get detections
+        results = model.predict(img_tensor, conf=cfg["confidence_threshold"])
+        
+        # Visualize results
+        if results and len(results) > 0 and hasattr(results[0], 'plot'):
             img_with_boxes = results[0].plot()
-            # confs = results[0].boxes.conf  # 这是个张量
-            # if len(confs) > 0 and (confs > 0.6).any():
             cv2.imshow("YOLO Detections", img_with_boxes)
+            
+            # Press 'q' to quit
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
