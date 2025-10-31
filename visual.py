@@ -4,7 +4,9 @@ from capture.grabber import grab
 from preprocess.transform import preprocess
 from model.yolo_wrapper import YOLOModel
 from logic.targeting import select_target, get_mouse_position
-from control.mouse import move_mouse_to
+from logic.predictor import TargetPredictor
+from control.mouse import move_mouse_to_smooth
+from control.mouse import move_mouse_to_duration
 from utils.logger import setup_logger
 import cv2
 import time
@@ -17,6 +19,12 @@ def main():
     cfg = load_config()
     log = setup_logger(log_file=cfg["log_file"])
     model = YOLOModel(cfg["model_path"])
+    predictor = TargetPredictor(
+        pos_alpha=cfg.get("smoothing_alpha", 0.5),
+        vel_alpha=cfg.get("velocity_alpha", 0.6),
+        max_speed_px_per_s=cfg.get("max_target_speed", 3000.0),
+        lead_ms=cfg.get("prediction_ms", 60),
+    )
 
     while True:
         # Capture screen
@@ -45,10 +53,25 @@ def main():
             # print(f"Targeting result: {xywhconfcls}")
 
             target = target[:2]
-            log.info(f"Target: {target}")
-            # move_to(*target,duration=cfg["mouse_move_delay"])
-            move_mouse_to(*target)
-            time.sleep(0.05)
+            pred_x, pred_y = predictor.update_and_predict(*target)
+            log.info(f"Target: {(pred_x, pred_y)}")
+            if cfg.get("direct_move_enabled", False):
+                move_mouse_to_duration(
+                    pred_x,
+                    pred_y,
+                    duration_s=float(cfg.get("move_duration", 0.1)),
+                    steps=int(cfg.get("move_steps", 10)),
+                )
+            else:
+                for _ in range(int(cfg.get("repeat_moves", 1))):
+                    move_mouse_to_smooth(
+                        pred_x,
+                        pred_y,
+                        gain=cfg.get("mouse_gain", 0.35),
+                        max_step=cfg.get("mouse_max_step", 25),
+                        deadzone=cfg.get("mouse_deadzone", 1),
+                    )
+            time.sleep(cfg.get("loop_sleep", 0.01))
         
         # time.sleep(0.1)
 

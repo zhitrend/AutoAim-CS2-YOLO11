@@ -24,10 +24,37 @@ preferred_cls: [1]
 mouse_move_delay: 0.01
 
 # min conf, if the confidence of the detection is less than this value, it will not be considered
-confidence_threshold: 0.4
+confidence_threshold: 0.2
 
 # visualize or not(true for debug)
 visualize: true
 
 # path to log file
 log_file: "log/run.log"
+
+# temporal smoothing and prediction
+# EMA smoothing for position and velocity [0..1], higher = more smoothing weight on new data
+smoothing_alpha: 0.5
+velocity_alpha: 0.6
+
+# lead time in milliseconds for constant-velocity prediction
+prediction_ms: 40
+
+# clamp target speed (pixels/second) to avoid spikes
+max_target_speed: 4000
+
+# smooth mouse movement settings
+mouse_gain: 0.65
+mouse_max_step: 80
+mouse_deadzone: 2
+
+# loop sleep to control update rate
+loop_sleep: 0.0
+
+# perform multiple smooth steps each loop to increase effective speed
+repeat_moves: 8
+
+# direct move: move to target in fixed duration split by steps
+direct_move_enabled: true
+move_duration: 0.1
+move_steps: 10
