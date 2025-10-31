@@ -1,63 +1,42 @@
-# model path
+# ===== 模型配置 =====
 model_path: "model/best.pt"
-
-# true:use gpu, false:use cpu
 use_gpu_capture: false
 
-# the screnn region to capture
+# ===== 屏幕区域 =====
 screen_region:
   left: 0
   top: 10
   width: 1280
   height: 800
 
-# class names
+# ===== 目标检测 =====
 names: ['tank']
+aim_classes: [0]           # 要检测的类别索引
+preferred_cls: [0]        # 优先选择的类别索引
+confidence_threshold: 0.2  # 置信度阈值(0-1)
+visualize: true           # 显示检测结果
 
-# classes to detect
-aim_classes: [0,]
+# ===== 目标跟踪 =====
+smoothing_alpha: 0.7      # 位置平滑系数(0-1, 越大响应越快)
+velocity_alpha: 0.8       # 速度平滑系数(0-1, 越大响应越快)
+prediction_ms: 30         # 预测提前时间(毫秒)
+max_target_speed: 8000    # 最大目标速度(像素/秒)
+prediction_enabled: true  # 开启预测
 
-# prefer heads, then body
-preferred_cls: [1]
+# ===== 鼠标控制 =====
+# 移动模式: true=直接移动, false=平滑移动
+direct_move_enabled: true  
 
-# mouse move delay(0 means no delay)
-mouse_move_delay: 0.01
+# 平滑移动参数
+mouse_gain: 0.85          # 移动增益 (0-1, 越大越快)
+mouse_max_step: 60         # 单步最大移动距离(像素)
+mouse_deadzone: 1          # 死区大小(像素)
+repeat_moves: 3            # 每帧移动次数
+loop_sleep: 0.003          # 循环延迟(秒)
 
-# min conf, if the confidence of the detection is less than this value, it will not be considered
-confidence_threshold: 0.2
+# 直接移动参数
+move_duration: 0.1         # 移动持续时间(秒)
+move_steps: 10             # 移动步数
 
-# visualize or not(true for debug)
-visualize: true
-
-# path to log file
+# ===== 日志 =====
 log_file: "log/run.log"
-
-# temporal smoothing and prediction
-# EMA smoothing for position and velocity [0..1], higher = more smoothing weight on new data
-smoothing_alpha: 0.5
-velocity_alpha: 0.6
-
-# lead time in milliseconds for constant-velocity prediction
-prediction_ms: 40
-
-# clamp target speed (pixels/second) to avoid spikes
-max_target_speed: 4000
-
-# enable/disable predictor smoothing and lead
-prediction_enabled: false
-
-# smooth mouse movement settings
-mouse_gain: 0.65
-mouse_max_step: 80
-mouse_deadzone: 2
-
-# loop sleep to control update rate
-loop_sleep: 0.0
-
-# perform multiple smooth steps each loop to increase effective speed
-repeat_moves: 8
-
-# direct move: move to target in fixed duration split by steps
-direct_move_enabled: true
-move_duration: 0.1
-move_steps: 10
