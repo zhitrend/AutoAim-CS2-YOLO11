@@ -5,7 +5,7 @@ use_gpu_capture: false
 # ===== 屏幕区域 =====
 screen_region:
   left: 0
-  top: 10
+  top: 20
   width: 1280
   height: 800
 
